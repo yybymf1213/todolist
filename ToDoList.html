@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html,body{
+            height:100%;
+            width:100%;
+        }
+        table{
+            margin:0 auto;
+            border-radius:5px;
+            color:#363434;
+        }
+        td{
+            text-align: center;
+            border:1px solid #0c9aec;
+        }
+        h3{
+            margin:5px auto;
+            width:100px;
+            height:30px;
+            line-height:28px;
+            color:#fff;
+            border-radius:5px;
+            text-align:center;
+            background:#0d8ef8;
+            cursor:pointer;
+        }
+        table tr td button{
+            color:#fff;
+            border:none;
+            width:40px;
+            height:22px;
+            margin:5px 5px;
+            line-height:22px;
+            border-radius:3px;
+            text-align:center;
+            background:#0d8ef8;
+        }
+        .options{
+            border:2px solid #0d8ef8;
+            border-radius:4px;
+        }
+        #app{
+            width:100%;
+            height:100%;
+        }
+        .cover{
+            width:100%;
+            height:100%;
+            background:grey;
+            opacity:.5;
+            position:absolute;
+            top:0;
+            left:0; 
+        }
+        .add{
+            border:2px solid #888888;
+            border-radius:4px;
+            padding:30px;
+            position:absolute;
+            top:300px;
+            left:600px;
+            z-index:1;
+        }
+        
+        .add_btn{
+            color:#fff;
+            border:none;
+            width:60px;
+            height:30px;
+            margin:5px 5px;
+            line-height:28px;
+            border-radius:3px;
+            text-align:center;
+            background:#0d8ef8;
+            margin-top:20px;
+            margin-left:60px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 这里是组件 -->
+        <todo :addlist="toDoList" @DeleteEvent="Delete"></todo>
+
+        <h3 @click="handleAdd()">新增待办</h3>
+        <div class="cover" v-show="isShow">
+            
+        </div>
+        <div class="add"  v-show="isShow">
+            时间：<input type="text" ref="time">
+            <br>
+            类型：<input list="type" class="options" ref="type">
+                    <datalist id="type">
+                        <option value="工作" class="option"/>
+                        <option value="家人" class="option"/>
+                    </datalist>
+                </input>
+            <br>
+            备注：<textarea name="" id="" cols="30" rows="10" ref="text"></textarea>
+            <br>
+            <div class="add_box">
+                <button class="add_btn submit_add" @click="handleSubmit()">提交</button>
+                <button class="add_btn cancel_add" @click="handleCancel()">取消</button>
+            </div>
+            
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuex@2.0.0"></script>
+    <script>
+        // var store = new Vuex.Store({
+        //     state : {
+
+        //     },
+        //     mutations : {
+
+        //     },
+        //     actions : {
+
+        //     },
+        // })
+        Vue.component('todo',{
+            props : ['thisadd','addlist'],
+            methods : {
+                Delete(id){
+                    this.$emit('DeleteEvent',id);
+                }
+            },
+            template : `
+                <div>
+                    <table cellspacing="0">
+                        <tr>
+                            <td>时间</td>
+                            <td>类型</td>
+                            <td>备注</td>
+                            <td>操作</td>
+                        </tr>
+                        <tr v-for="item in addlist">
+                            <td>{{item.time}}</td>
+                            <td>
+                                
+                            </td>
+                            <td>{{item.text}}</td>
+                            <td><button>编辑</button><button>删除</button @click="Delete(item.id)"></td>
+                        </tr>
+
+                    </table>
+                </div>
+            `,
+        })
+        var vm = new Vue({
+            data : {
+                isShow : false,
+                toDoList : [{"id" : "20203939","time" : "9-12-10:00","type" : "family","text" : "多吃饭多睡觉夜宵多吃肉"}],
+            },
+            el : '#app',
+            methods : {
+                handleAdd(){//点击新增
+                    this.isShow = !this.isShow;
+                },
+                handleSubmit(){//点击提交
+                    this.isShow = !this.isShow;
+                    let idNum = new Date().getTime();
+                    let thisAdd = {
+                        "id" : idNum,
+                        "time" : this.$refs.time.value,
+                        "type" : this.$refs.type.value,
+                        "text" : this.$refs.text.value
+                    }
+                    this.toDoList.push(thisAdd);
+                },
+                handleCancel(){//取消新增
+                    this.isShow = !this.isShow;
+                },
+                Delete(id){
+                    console.log("删除")
+                    this.toDoList.forEach((index,value)=>{
+                        console.log("删除")
+                        if(value === id){
+                            this.toDoList.splice(index,index + 1);
+                        }
+                    })
+                }
+
+            },
+        })
+    </script>
+</body>
+</html>
